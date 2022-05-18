@@ -22,7 +22,12 @@ export class Watchlist extends Component {
     super();
     this.state = {searchData: '', searchResult: []};
   }
-  componentDidMount() {}
+  componentDidMount() {
+    this.mounted=true
+  }
+  componentWillUnmount(){
+    this.mounted=false
+  }
   _listsearch = text => {
     const {searchResult} = this.state;
     const {watchlist} = this.props;
@@ -34,9 +39,9 @@ export class Watchlist extends Component {
         const textData = text.toUpperCase();
         return itemData.indexOf(textData) > -1;
       });
-      newData.length > 0 && this.setState({searchResult: newData});
+      newData.length > 0 && this.mounted==true&&this.setState({searchResult: newData});
     } else {
-      this.setState({searchResult: []});
+      this.mounted==true&&this.setState({searchResult: []});
     }
   };
   render() {
@@ -46,13 +51,7 @@ export class Watchlist extends Component {
     // console.log(watchlist);
     return (
       <View style={{flex: 1, backgroundColor: '#122034'}}>
-        {/* <ImageBackground
-           blurRadius={30}
-           style={{flex: 1}}
-           source={{
-             uri: 'https://png.pngtree.com/background/20210716/original/pngtree-constellation-watercolor-cosmic-mobile-phone-wallpaper-picture-image_1347673.jpg',
-           }}> */}
-        <View
+       <View
           style={styles.header}>
           <Text style={{color: 'white', fontWeight: 'bold', fontSize: 20}}>
             Watchlist
@@ -65,17 +64,17 @@ export class Watchlist extends Component {
             marginTop: 15,
           }}>
           <TextInput
-            placeholderTextColor={'black'}
+            placeholderTextColor={'grey'}
             placeholder="Search Watchlist"
             style={styles.searchbar}
             value={searchData}
             onChangeText={value => {
               this._listsearch(value);
-              this.setState({searchData: value});
+              this.mounted==true&&this.setState({searchData: value});
             }}
           />
         </View>
-        <FlatList
+        {watchlist.length > 0||searchResult.length > 0?<FlatList
           data={searchResult.length > 0 ? searchResult : watchlist}
           style={{marginHorizontal: 20, marginBottom: 15}}
           columnWrapperStyle={{justifyContent: 'space-between'}}
@@ -100,8 +99,7 @@ export class Watchlist extends Component {
               />
             </TouchableOpacity>
           )}
-        />
-        {/* </ImageBackground> */}
+        />:<View style={{justifyContent:'center',alignItems:'center',flex:1}}><Image style={{height:300,width:300}} source={require('../../assets/atoms/ae8ac2fa217d23aadcc913989fcc34a2-removebg-preview.png')}></Image></View>}
       </View>
     );
   }
@@ -123,11 +121,11 @@ const styles = StyleSheet.create({
   searchbar:{
     backgroundColor: 'white',
     width: '80%',
-    color: 'black',
+    color: 'dimgrey',
     opacity: 0.8,
     borderRadius: 15,
     height: 45,
-    marginLeft: 10,
+    marginLeft: 10,marginBottom:10
   }
 });
 

@@ -31,15 +31,19 @@ export default class Home extends Component {
   }
   componentDidMount() {
     const {page} = this.state;
+    this.mounted=true
     this.pagenow = 1;
     this._fetchnowplaying(this.pagenow);
+  }
+  componentWillUnmount(){
+    this.mounted=false
   }
   _fetchnowplaying = x => {
     fetch(
       `https://api.themoviedb.org/3/movie/now_playing?api_key=633ec42816ec106d78a7b9185d169896&language=en-US&page=${x}`,
     )
       .then(res => res.json())
-      .then(data => this.setState({nowplaying: data.results}));
+      .then(data => this.mounted==true&&this.setState({nowplaying: data.results}));
   };
   _next = () => {
     this.pagenow++;

@@ -8,6 +8,7 @@ import {
   ImageBackground,
   Image,
   TouchableOpacity,
+  ToastAndroid,
   Linking,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
@@ -27,32 +28,38 @@ export class Details extends Component {
   }
   componentDidMount() {
     const {id} = this.props.route.params;
+    this.mounted = true;
     this._fetchdetails(id);
     this._fetchcast(id);
     this._fetchrecommendation(id);
     // this._fetchsocialmedia(id);
     this._fetchphotos(id);
   }
+  componentWillUnmount() {
+    this.mounted = false;
+  }
   _fetchdetails = id => {
     fetch(
       `https://api.themoviedb.org/3/movie/${id}?api_key=633ec42816ec106d78a7b9185d169896&language=en-US`,
     )
       .then(res => res.json())
-      .then(data => this.setState({details: data}));
+      .then(data => this.mounted == true && this.setState({details: data}));
   };
   _fetchcast = id => {
     fetch(
       `https://api.themoviedb.org/3/movie/${id}/credits?api_key=633ec42816ec106d78a7b9185d169896&language=en-US`,
     )
       .then(res => res.json())
-      .then(data => this.setState({cast: data}));
+      .then(data => this.mounted == true && this.setState({cast: data}));
   };
   _fetchrecommendation = id => {
     fetch(
       `https://api.themoviedb.org/3/movie/${id}/recommendations?api_key=633ec42816ec106d78a7b9185d169896&language=en-US&page=1`,
     )
       .then(res => res.json())
-      .then(data => this.setState({recommendation: data}));
+      .then(
+        data => this.mounted == true && this.setState({recommendation: data}),
+      );
   };
   // _fetchsocialmedia = id => {
   //   fetch(
@@ -66,14 +73,18 @@ export class Details extends Component {
       `https://api.themoviedb.org/3/movie/${id}/images?api_key=633ec42816ec106d78a7b9185d169896&include_image_language=null`,
     )
       .then(res => res.json())
-      .then(data => this.setState({photos: data.posters.slice(0, 15)}));
+      .then(
+        data =>
+          this.mounted == true &&
+          this.setState({photos: data.posters.slice(0, 15)}),
+      );
   };
 
   render() {
     const {watchlist} = this.props;
     const {details, overviewtab, cast, recommendation, socialmedia, photos} =
       this.state;
-    // console.log(photos);
+    // console.log(details);
     const imglink = 'https://image.tmdb.org/t/p/w500';
     return (
       <View style={{flex: 1}}>
@@ -141,26 +152,43 @@ export class Details extends Component {
                     justifyContent: 'space-evenly',
                     alignItems: 'center',
                   }}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      Linking.openURL(`${details.homepage}`);
-                    }}
-                    style={styles.websitebutton}>
-                    <Feather name="globe" size={20} color="white" />
-                    <Text style={{color: 'white', marginLeft: 10}}>
-                      Website
-                    </Text>
-                  </TouchableOpacity>
+                  {details.homepage != '' ? (
+                    <TouchableOpacity
+                      onPress={() => {
+                        Linking.openURL(`${details.homepage}`);
+                      }}
+                      style={styles.websitebutton}>
+                      <Feather name="globe" size={20} color="white" />
+                      <Text style={{color: 'white', marginLeft: 10}}>
+                        Website
+                      </Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity
+                      onPress={() => {
+                        ToastAndroid.show(
+                          'There is no website available',
+                          ToastAndroid.SHORT,
+                        );
+                      }}
+                      style={styles.addwatchlist}>
+                      <Feather name="x" size={20} color="black" />
+                      <Text style={{color: 'black', marginLeft: 10}}>
+                        Website
+                      </Text>
+                    </TouchableOpacity>
+                  )}
                   {watchlist.filter(value => {
                     return value.id == details.id;
                   }).length < 1 ? (
                     <TouchableOpacity
                       onPress={() => {
-                        this.props.add({
-                          id: details.id,
-                          title: details.title,
-                          uri: `${imglink}${details.poster_path}`,
-                        });
+                        details.id != null &&
+                          this.props.add({
+                            id: details.id,
+                            title: details.title,
+                            uri: `${imglink}${details.poster_path}`,
+                          });
                         // console.log(this.props.watchlist);
                       }}
                       style={styles.addwatchlist}>
@@ -192,7 +220,9 @@ export class Details extends Component {
                   marginBottom: 20,
                 }}>
                 <TouchableOpacity
-                  onPress={() => this.setState({overviewtab: true})}
+                  onPress={() =>
+                    this.mounted == true && this.setState({overviewtab: true})
+                  }
                   style={{
                     ...styles.taboverviewphotos,
                     borderTopLeftRadius: 5,
@@ -209,7 +239,9 @@ export class Details extends Component {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => this.setState({overviewtab: false})}
+                  onPress={() =>
+                    this.mounted == true && this.setState({overviewtab: false})
+                  }
                   style={{
                     ...styles.taboverviewphotos,
                     borderTopRightRadius: 5,
@@ -253,23 +285,29 @@ export class Details extends Component {
                       <Text style={{color: 'white', fontSize: 25}}>Cast</Text>
                       <Text
                         onPress={() => {
-                          Linking.openURL(`${details.homepage}`);
+                          details.homepage == ''
+                            ? ToastAndroid.show(
+                                'There is no website available',
+                                ToastAndroid.SHORT,
+                              )
+                            : Linking.openURL(`${details.homepage}`);
                         }}
                         style={{color: '#00CD6F', fontSize: 15}}>
                         view all
                       </Text>
                     </View>
-                    <View
+                    <ScrollView
+                    horizontal={true}
                       style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-around',
-                      }}>
+                        // flexDirection: 'row',
+                        // alignItems: 'center',
+                        // justifyContent: 'space-around',
+                        }}>
                       {cast.cast &&
                         cast.cast
                           .map((item, index) => {
                             return (
-                              <View key={index}>
+                              <View key={index} style={{marginRight:20}}>
                                 <Image
                                   style={{
                                     height: 60,
@@ -287,9 +325,8 @@ export class Details extends Component {
                                 </Text>
                               </View>
                             );
-                          })
-                          .slice(0, 4)}
-                    </View>
+                          })}
+                    </ScrollView>
                   </View>
                   <View
                     style={{
