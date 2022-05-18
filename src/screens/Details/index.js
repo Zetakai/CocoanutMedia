@@ -22,6 +22,7 @@ export class Details extends Component {
       cast: [],
       recommendation: [],
       socialmedia: {},
+      photos: [],
     };
   }
   componentDidMount() {
@@ -29,7 +30,8 @@ export class Details extends Component {
     this._fetchdetails(id);
     this._fetchcast(id);
     this._fetchrecommendation(id);
-    this._fetchsocialmedia(id);
+    // this._fetchsocialmedia(id);
+    this._fetchphotos(id);
   }
   _fetchdetails = id => {
     fetch(
@@ -52,19 +54,26 @@ export class Details extends Component {
       .then(res => res.json())
       .then(data => this.setState({recommendation: data}));
   };
-  _fetchsocialmedia = id => {
+  // _fetchsocialmedia = id => {
+  //   fetch(
+  //     `https://api.themoviedb.org/3/movie/${id}/external_ids?api_key=633ec42816ec106d78a7b9185d169896`,
+  //   )
+  //     .then(res => res.json())
+  //     .then(data => this.setState({socialmedia: data}));
+  // };
+  _fetchphotos = id => {
     fetch(
-      `https://api.themoviedb.org/3/movie/${id}/external_ids?api_key=633ec42816ec106d78a7b9185d169896`,
+      `https://api.themoviedb.org/3/movie/${id}/images?api_key=633ec42816ec106d78a7b9185d169896&include_image_language=null`,
     )
       .then(res => res.json())
-      .then(data => this.setState({socialmedia: data}));
+      .then(data => this.setState({photos: data.posters.slice(0, 15)}));
   };
 
   render() {
     const {watchlist} = this.props;
-    const {details, overviewtab, cast, recommendation, socialmedia} =
+    const {details, overviewtab, cast, recommendation, socialmedia, photos} =
       this.state;
-    //console.log(details);
+    // console.log(photos);
     const imglink = 'https://image.tmdb.org/t/p/w500';
     return (
       <View style={{flex: 1}}>
@@ -72,15 +81,7 @@ export class Details extends Component {
           blurRadius={10}
           style={{flex: 1}}
           source={{uri: `${imglink}${details.poster_path}`}}>
-          <View
-            style={{
-              height: 50,
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: 'black',
-              opacity: 0.5,
-              flexDirection: 'row',
-            }}>
+          <View style={styles.header}>
             <TouchableOpacity
               onPress={() => {
                 this.props.navigation.goBack();
@@ -91,42 +92,14 @@ export class Details extends Component {
             <Text style={{color: 'white', fontSize: 20}}>Details</Text>
           </View>
           <ScrollView>
-            <View
-              style={{
-                backgroundColor: '#122034',
-                borderRadius: 5,
-                marginTop: 40,
-              }}>
-              <View
-                style={{
-                  backgroundColor: 'white',
-                  marginHorizontal: 10,
-                  marginTop: 10,
-                  borderRadius: 5,
-                }}>
+            <View style={styles.maincontainer}>
+              <View style={styles.whitecontainer}>
                 <View style={{flexDirection: 'row'}}>
                   <Image
-                    style={{
-                      borderRadius: 10,
-                      marginLeft: 15,
-                      marginTop: -25,
-                      height: 200,
-                      width: 150,
-                    }}
+                    style={styles.image}
                     source={{uri: `${imglink}${details.poster_path}`}}
                   />
-                  <View
-                    style={{
-                      position: 'absolute',
-                      height: 55,
-                      width: 55,
-                      backgroundColor: '#DFBF21',
-                      borderRadius: 5,
-                      right: 18,
-                      top: -20,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
+                  <View style={styles.scorebox}>
                     <Text style={{color: 'white', fontWeight: 'bold'}}>
                       Score
                     </Text>
@@ -172,16 +145,7 @@ export class Details extends Component {
                     onPress={() => {
                       Linking.openURL(`${details.homepage}`);
                     }}
-                    style={{
-                      height: 48,
-                      width: '40%',
-                      backgroundColor: '#00CD6F',
-                      borderRadius: 25,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      flexDirection: 'row',
-                      elevation: 20,
-                    }}>
+                    style={styles.websitebutton}>
                     <Feather name="globe" size={20} color="white" />
                     <Text style={{color: 'white', marginLeft: 10}}>
                       Website
@@ -199,18 +163,7 @@ export class Details extends Component {
                         });
                         // console.log(this.props.watchlist);
                       }}
-                      style={{
-                        height: 48,
-                        backgroundColor: 'white',
-                        width: '40%',
-                        borderColor: 'black',
-                        borderWidth: 1,
-                        borderRadius: 25,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        flexDirection: 'row',
-                        elevation: 20,
-                      }}>
+                      style={styles.addwatchlist}>
                       <Entypo name="plus" size={20} color="black" />
                       <Text style={{color: 'black', marginLeft: 10}}>
                         Watch List
@@ -222,16 +175,7 @@ export class Details extends Component {
                         this.props.delete(details.id);
                         // console.log(this.props.watchlist);
                       }}
-                      style={{
-                        height: 48,
-                        backgroundColor: '#00CD6F',
-                        width: '40%',
-                        borderRadius: 25,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        flexDirection: 'row',
-                        elevation: 20,
-                      }}>
+                      style={styles.addedtowatchlist}>
                       <Entypo name="check" size={20} color="white" />
                       <Text style={{color: 'white', marginLeft: 10}}>
                         Watch List
@@ -250,14 +194,9 @@ export class Details extends Component {
                 <TouchableOpacity
                   onPress={() => this.setState({overviewtab: true})}
                   style={{
+                    ...styles.taboverviewphotos,
                     borderTopLeftRadius: 5,
                     borderBottomLeftRadius: 5,
-                    width: '50%',
-                    height: 30,
-                    borderColor: '#00CD6F',
-                    borderWidth: 2,
-                    justifyContent: 'center',
-                    alignItems: 'center',
                     backgroundColor:
                       overviewtab == true ? '#00CD6F' : 'transparent',
                   }}>
@@ -272,14 +211,9 @@ export class Details extends Component {
                 <TouchableOpacity
                   onPress={() => this.setState({overviewtab: false})}
                   style={{
+                    ...styles.taboverviewphotos,
                     borderTopRightRadius: 5,
                     borderBottomRightRadius: 5,
-                    width: '50%',
-                    height: 30,
-                    borderColor: '#00CD6F',
-                    borderWidth: 2,
-                    justifyContent: 'center',
-                    alignItems: 'center',
                     backgroundColor:
                       overviewtab != true ? '#00CD6F' : 'transparent',
                   }}>
@@ -288,7 +222,7 @@ export class Details extends Component {
                       fontSize: 17,
                       color: overviewtab == true ? '#00CD6F' : 'white',
                     }}>
-                    Social Media
+                    Photos
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -343,7 +277,10 @@ export class Details extends Component {
                                     borderRadius: 60 / 2,
                                   }}
                                   source={{
-                                    uri: `${imglink}${item.profile_path}`,
+                                    uri:
+                                      item.profile_path != null
+                                        ? `${imglink}${item.profile_path}`
+                                        : `https://www.clipartmax.com/png/full/83-836460_pedro-gaytan-treasurer-and-patient-board-member-mr-profile-logo-no-background.png`,
                                   }}></Image>
                                 <Text style={{color: 'grey'}}>
                                   {item.name.slice(0, 8)}..
@@ -375,7 +312,8 @@ export class Details extends Component {
                                 this._fetchdetails(item.id);
                                 this._fetchcast(item.id);
                                 this._fetchrecommendation(item.id);
-                                this._fetchsocialmedia(item.id);
+                                //this._fetchsocialmedia(item.id);
+                                this._fetchphotos(item.id);
                               }}>
                               <Image
                                 style={{
@@ -392,50 +330,25 @@ export class Details extends Component {
                   </View>
                 </View>
               ) : (
-                <View
-                  style={{
-                    marginHorizontal: 18,
-                    marginBottom: 10,
-                    flexDirection: 'row',
-                    justifyContent: 'space-evenly',
-                    alignItems: 'center',
-                  }}>
-                  {socialmedia.facebook_id && (
-                    <TouchableOpacity
-                      onPress={() => {
-                        Linking.openURL(
-                          `https://www.facebook.com/${socialmedia.facebook_id}`,
+                <View>
+                  <ScrollView horizontal={true}>
+                    {photos &&
+                      photos.map((item, index) => {
+                        return (
+                          <Image
+                            key={index}
+                            style={{
+                              borderRadius: 10,
+                              height: 200,
+                              width: 150,
+                              marginLeft: 8,
+                              marginBottom: 10,
+                            }}
+                            source={{uri: `${imglink}${item.file_path}`}}
+                          />
                         );
-                      }}
-                      style={{justifyContent: 'center', alignItems: 'center'}}>
-                      <Entypo name="facebook" size={25} color="#0D8AF0" />
-                      <Text>@{socialmedia.facebook_id.slice(0, 10)}..</Text>
-                    </TouchableOpacity>
-                  )}
-                  {socialmedia.instagram_id && (
-                    <TouchableOpacity
-                      onPress={() => {
-                        Linking.openURL(
-                          `https://www.instagram.com/${socialmedia.instagram_id}`,
-                        );
-                      }}
-                      style={{justifyContent: 'center', alignItems: 'center'}}>
-                      <Entypo name="instagram" size={25} color="white" />
-                      <Text>@{socialmedia.instagram_id.slice(0, 10)}..</Text>
-                    </TouchableOpacity>
-                  )}
-                  {socialmedia.twitter_id && (
-                    <TouchableOpacity
-                      onPress={() => {
-                        Linking.openURL(
-                          `https://www.twitter.com/${socialmedia.twitter_id}`,
-                        );
-                      }}
-                      style={{justifyContent: 'center', alignItems: 'center'}}>
-                      <Entypo name="twitter" size={25} color="#1DA1F2" />
-                      <Text>@{socialmedia.twitter_id.slice(0, 10)}..</Text>
-                    </TouchableOpacity>
-                  )}
+                      })}
+                  </ScrollView>
                 </View>
               )}
             </View>
@@ -447,7 +360,83 @@ export class Details extends Component {
 }
 
 const styles = StyleSheet.create({
-  //the styles havent moved here yet
+  header: {
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'black',
+    opacity: 0.5,
+    flexDirection: 'row',
+  },
+  maincontainer: {
+    backgroundColor: '#122034',
+    borderRadius: 5,
+    marginTop: 40,
+  },
+  whitecontainer: {
+    backgroundColor: 'white',
+    marginHorizontal: 10,
+    marginTop: 10,
+    borderRadius: 5,
+  },
+  scorebox: {
+    position: 'absolute',
+    height: 55,
+    width: 55,
+    backgroundColor: '#DFBF21',
+    borderRadius: 5,
+    right: 18,
+    top: -20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    borderRadius: 10,
+    marginLeft: 15,
+    marginTop: -25,
+    height: 200,
+    width: 150,
+  },
+  websitebutton: {
+    height: 48,
+    width: '40%',
+    backgroundColor: '#00CD6F',
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    elevation: 20,
+  },
+  addwatchlist: {
+    height: 48,
+    backgroundColor: 'white',
+    width: '40%',
+    borderColor: 'black',
+    borderWidth: 1,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    elevation: 20,
+  },
+  addedtowatchlist: {
+    height: 48,
+    backgroundColor: '#00CD6F',
+    width: '40%',
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    elevation: 20,
+  },
+  taboverviewphotos: {
+    width: '50%',
+    height: 30,
+    borderColor: '#00CD6F',
+    borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 const mapStateToProps = state => {

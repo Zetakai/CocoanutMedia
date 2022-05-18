@@ -6,7 +6,6 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Home from '../screens/Home';
 import Details from '../screens/Details';
 import Watchlist from '../screens/Watchlist';
-import Splash from '../screens/Splash';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';

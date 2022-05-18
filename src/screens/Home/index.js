@@ -27,7 +27,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 export default class Home extends Component {
   constructor() {
     super();
-    this.state = {nowplaying: '', page: 1};
+    this.state = {nowplaying: ''};
   }
   componentDidMount() {
     const {page} = this.state;
@@ -46,7 +46,7 @@ export default class Home extends Component {
     this._fetchnowplaying(this.pagenow);
   };
   _previous = () => {
-    this.pagenow--;
+    this.pagenow>1&&this.pagenow--;
     this._fetchnowplaying(this.pagenow);
   };
   render() {
@@ -91,19 +91,8 @@ export default class Home extends Component {
             uri: 'https://png.pngtree.com/background/20210716/original/pngtree-constellation-watercolor-cosmic-mobile-phone-wallpaper-picture-image_1347673.jpg',
           }}> */}
         <View
-          style={{
-            height: 50,
-            borderBottomLeftRadius: 25,
-            borderBottomRightRadius: 25,
-            borderColor: 'white',
-            borderBottomWidth: 2,
-            borderLeftWidth: 2,
-            borderRightWidth: 2,
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'row',
-          }}>
-          {this.pagenow != 1 && (
+          style={styles.header}>
+          {this.pagenow > 1 && (
             <TouchableOpacity
               onPress={() => {
                 this._previous();
@@ -134,15 +123,7 @@ export default class Home extends Component {
               onPress={() => {
                 this.props.navigation.navigate('Details', {id: item.id});
               }}
-              style={{
-                backgroundColor: 'white',
-                height: 200,
-                marginTop: 20,
-                marginLeft: 30,
-                borderRadius: 10,
-                flexDirection: 'row',
-                marginRight: 10,
-              }}>
+              style={styles.itemcontainer}>
               <Image
                 style={{
                   borderRadius: 10,
@@ -179,17 +160,7 @@ export default class Home extends Component {
                   {item.overview.slice(0, 70)}...
                 </Text>
                 <View
-                  style={{
-                    position: 'absolute',
-                    height: 50,
-                    width: 50,
-                    backgroundColor: '#DFBF21',
-                    borderRadius: 5,
-                    right: 0,
-                    bottom: 0,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}>
+                  style={styles.scorebox}>
                   <Text style={{color: 'white', fontWeight: 'bold'}}>
                     Score
                   </Text>
@@ -213,5 +184,36 @@ export default class Home extends Component {
 }
 
 const styles = StyleSheet.create({
-  //the styles havent moved here yet
+  header:{
+    height: 50,
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
+    borderColor: 'white',
+    borderBottomWidth: 2,
+    borderLeftWidth: 2,
+    borderRightWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  itemcontainer:{
+    backgroundColor: 'white',
+    height: 200,
+    marginTop: 20,
+    marginLeft: 30,
+    borderRadius: 10,
+    flexDirection: 'row',
+    marginRight: 10,
+  },
+  scorebox:{
+    position: 'absolute',
+    height: 50,
+    width: 50,
+    backgroundColor: '#DFBF21',
+    borderRadius: 5,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 });

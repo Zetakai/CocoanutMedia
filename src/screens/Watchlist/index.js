@@ -53,18 +53,7 @@ export class Watchlist extends Component {
              uri: 'https://png.pngtree.com/background/20210716/original/pngtree-constellation-watercolor-cosmic-mobile-phone-wallpaper-picture-image_1347673.jpg',
            }}> */}
         <View
-          style={{
-            height: 50,
-            borderBottomLeftRadius: 25,
-            borderBottomRightRadius: 25,
-            borderColor: 'white',
-            borderBottomWidth: 2,
-            borderLeftWidth: 2,
-            borderRightWidth: 2,
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'row',
-          }}>
+          style={styles.header}>
           <Text style={{color: 'white', fontWeight: 'bold', fontSize: 20}}>
             Watchlist
           </Text>
@@ -78,15 +67,7 @@ export class Watchlist extends Component {
           <TextInput
             placeholderTextColor={'black'}
             placeholder="Search Watchlist"
-            style={{
-              backgroundColor: 'white',
-              width: '80%',
-              color: 'black',
-              opacity: 0.8,
-              borderRadius: 15,
-              height: 45,
-              marginLeft: 10,
-            }}
+            style={styles.searchbar}
             value={searchData}
             onChangeText={value => {
               this._listsearch(value);
@@ -127,7 +108,27 @@ export class Watchlist extends Component {
 }
 
 const styles = StyleSheet.create({
-  //the styles havent moved here yet
+  header:{
+    height: 50,
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
+    borderColor: 'white',
+    borderBottomWidth: 2,
+    borderLeftWidth: 2,
+    borderRightWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  searchbar:{
+    backgroundColor: 'white',
+    width: '80%',
+    color: 'black',
+    opacity: 0.8,
+    borderRadius: 15,
+    height: 45,
+    marginLeft: 10,
+  }
 });
 
 const mapStateToProps = state => {
